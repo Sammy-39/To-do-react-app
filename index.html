@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <script crossorigin src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="root" class="container my-5"> </div>
+    <script type="text/jsx">
+        var rootElem = document.querySelector("#root")
+
+        var SearchIcon = () =>{
+            return(
+                <i className="fas fa-search search"></i>
+            )
+        }
+
+        var SearchForm = (props) =>{
+
+            var doNothing = (event)=>{
+                event.preventDefault();
+            }
+
+            return(
+                <form className="form" onSubmit={()=>doNothing(event)}>
+                    <SearchIcon />
+                    <input type="text" className="form-control search-input" placeholder="Search To-do list" onKeyUp={props.keyup}/>
+                </form>
+            )
+        }
+
+        var Search = (props) =>{
+            return(
+                <div>
+                    <h1 className="my-3"> To-do List </h1>
+                    <SearchForm keyup={props.keyup}/>
+                </div>
+            )
+        }
+
+        var TickIcon = (props)=>{
+            return(
+                <i className="fas fa-check tick" onClick={props.finish}></i>
+            )
+        }
+
+        var DeleteIcon = (props)=>{
+            return(
+                <i className="fas fa-trash delete" onClick={props.delete}></i>
+            )
+        }
+
+        var ListItem = (props)=>{
+            return(
+                <li className="list-group-item item">
+                    <TickIcon finish={props.finish}/>
+                    <div className="value">{props.value}</div>
+                    <DeleteIcon delete={props.delete}/>
+                </li>
+            )
+        }
+
+        var AddForm = (props)=>{
+            return(
+                <form className="text-center input-form my-5" onSubmit={props.submit}>
+                    <label> <b> Add new to-do... </b> </label>
+                    <input type="text" className="form-control input" 
+                    placeholder="Add new To-do" />
+                </form>
+            )
+        }
+
+        var Category = (props) =>{
+            return( props.show > 0 ? (
+                    <div className="cat mt-4">
+                        <span className="cat-text mr-4"> {props.count} items </span> 
+                        <span className="cat-link mr-3 all" onClick={props.all}> All </span> 
+                        <span className="cat-link mr-3 act" onClick={props.active}> Active </span> 
+                        <span className="cat-link mr-3 comp" onClick={props.completed}> Completed </span>
+                        <span className="cat-link" onClick={props.clearComp}> Clear Completed </span>
+                    </div>
+                ) : " "
+            )
+        }
+
+        var showCategory = 0
+        var initial = 0
+
+        var AddItem = ()=>{
+            var [inputValueList, setInputValue] = React.useState([])
+
+            var [allList, setAll] = React.useState([])
+            var [activeList, setActive] = React.useState([])
+            var [completedList, setCompleted] = React.useState([])
+
+            var [itemCount, setCount] = React.useState(0)
+
+            var addItem = (event)=>{
+                event.preventDefault()
+                showCategory = 1
+                var value = document.querySelector('.input').value
+                
+                if(allList.indexOf(value)===-1){
+                    if([0,1].indexOf(initial)!==-1){ setInputValue(inputValueList.concat([value])) }
+                    setAll(allList.concat([value]))
+                    setActive(activeList.concat([value]))
+                    setCount(itemCount+1)
+                }
+                event.target.reset()
+            }
+
+            var deleteItem = (event,index)=>{
+                var value = inputValueList[index]
+
+                setInputValue(inputValueList.filter((item,idx)=>(index!==idx)))
+                setAll(allList.filter((item)=>(value!==item)))
+                setActive(activeList.filter((item)=>(value!==item)))
+                setCompleted(completedList.filter((item)=>(value!==item)))
+
+                setCount(itemCount-1)
+            }
+
+            var finshItem = (event,index)=>{
+
+                setCompleted(completedList.concat(inputValueList.filter((item,idx)=>(index===idx))))
+                setActive(activeList.filter((item,idx)=>(index!==idx)))
+
+                if(initial===1) { setInputValue(inputValueList.filter((item,idx)=>(index!==idx))) }
+
+            }
+
+            var showAll = (event)=>{
+                initial = 0 
+
+                event.target.style.border = "1px solid rgba(128, 128, 128, 0.5)"
+                document.querySelector(".act").style.border = "1px solid white"
+                document.querySelector(".comp").style.border = "1px solid white"
+
+                setInputValue(allList)
+                setCount(allList.length)
+            }
+
+            var showActive = (event)=>{
+                initial = 1
+
+                event.target.style.border = "1px solid rgba(128, 128, 128, 0.5)"
+                document.querySelector(".all").style.border = "1px solid white"
+                document.querySelector(".comp").style.border = "1px solid white"
+
+                setInputValue(activeList)
+                setCount(activeList.length)
+                
+            }
+
+            var showCompleted = (event)=>{
+                initial = 3
+
+                event.target.style.border = "1px solid rgba(128, 128, 128, 0.5)"
+                document.querySelector(".all").style.border = "1px solid white"
+                document.querySelector(".act").style.border = "1px solid white"
+
+                setInputValue(Array.from(new Set(completedList)))
+                setCount(completedList.length)
+            }
+
+            var clearCompleted =()=>{
+                setAll(allList.filter((item)=>(completedList.indexOf(item)===-1)))
+                setCompleted([])
+
+                if(initial===3){ 
+                    setInputValue([]) 
+                    setCount(0) 
+                }
+                initial = 4
+            }
+
+            var keyup = (event)=>{
+                console.log(document.querySelector(".list"))
+                var listElem = document.querySelector(".list")
+                var val = event.target.value.trim().toLowerCase()
+                var searchCount = 0
+
+                Array.from(listElem.children).forEach((item)=>{
+                    if(!item.innerText.toLowerCase().includes(val)){
+                        item.classList.add("filter")
+                    }
+                })
+            
+                Array.from(listElem.children).forEach((item)=>{
+                    if(item.innerText.toLowerCase().includes(val)){ 
+                        item.classList.remove("filter")
+                        searchCount+=1
+                    }
+                })
+
+                setCount(searchCount)
+            }
+
+            return(
+                <div className="col-lg-6 col-md-8 col-sm-10 col-10 
+                offset-lg-3 offset-md-2 offset-sm-1 offset-1 my-5">
+
+                   <Search keyup={()=>keyup(event)}/>
+                    
+                    <ul className="list-group list mt-5">
+                        { inputValueList.map((item,index)=>(
+                            <ListItem 
+                                key={index} 
+                                value={item} 
+                                delete={()=>deleteItem(event,index)}
+                                finish={()=>finshItem(event,index)}
+                            /> ))}
+                    </ul>
+
+                    <Category 
+                        show={showCategory} 
+                        count={itemCount} 
+                        all={()=>showAll(event)} 
+                        active={()=>showActive(event)} 
+                        completed={()=>showCompleted(event)} 
+                        clearComp={clearCompleted} />
+
+                    <AddForm submit={()=>addItem(event)} />
+
+                </div>
+            )
+        }
+
+        var App = ()=>{
+            showCategory = 0
+            initial = 0
+            return(
+                <div className="text-center">
+                    <AddItem />
+                </div>
+            )
+        }
+
+        ReactDOM.render(<App />, rootElem)
+    </script>
+</body>
+</html>

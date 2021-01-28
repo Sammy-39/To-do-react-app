@@ -1,0 +1,76 @@
+.form{
+    position: relative;
+}
+
+.search{
+    position: absolute;
+    top: 15px;
+    right: 10px;
+}
+
+.search-input{
+    padding: 10px 40px 10px 10px;
+}
+
+.input{
+    padding: 10px 40px 10px 10px;
+}
+
+.item{
+    position: relative;
+    margin-bottom: 15px;
+    box-shadow: 0 5px 5px 5px rgba(129, 129, 129, 0.5);
+    padding: 10px 40px 10px 35px;
+    text-align: left;
+}
+
+.value{
+    overflow: auto;
+}
+
+
+.tick{
+    cursor: pointer;
+    position: absolute;
+    top: 15px;
+    left: 10px;
+    color: rgba(129, 129, 129, 0.5);
+}
+
+.tick:hover{
+    color: green;
+}
+
+.delete{
+    cursor: pointer;
+    position: absolute;
+    top: 15px;
+    right: 10px;
+}
+
+.cat{
+    box-shadow: 0 5px 5px 5px rgba(129, 129, 129, 0.5);
+    padding: 5px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.cat-link{
+    border: 1px solid white;
+    padding: 3px;
+}
+
+.cat-link:hover{
+    border: 1px solid rgba(128, 128, 128, 0.5);
+    cursor: pointer;
+}
+
+.cat-text{
+    padding: 3px;
+    border: 1px solid white;
+}
+
+.filter{
+    display: none !important;
+}
