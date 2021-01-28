@@ -65,9 +65,18 @@
             return(
                 <li className="list-group-item item">
                     <TickIcon finish={props.finish}/>
-                    <div className="value">{props.value}</div>
+                    <div className="value" onClick={props.edit}>{props.value}</div>
                     <DeleteIcon delete={props.delete}/>
                 </li>
+            )
+        }
+
+        var EditItem = (props)=>{
+            return(
+                <form onSubmit={props.save}>
+                    <label> <b> Edit to-do item... </b> </label>
+                    <input type="text" className="form-control edit" defaultValue={props.value} />
+                </form>
             )
         }
 
@@ -99,6 +108,8 @@
 
         var AddItem = ()=>{
             var [inputValueList, setInputValue] = React.useState([])
+
+            var [editValueList,setEditValue] = React.useState([])
 
             var [allList, setAll] = React.useState([])
             var [activeList, setActive] = React.useState([])
@@ -138,6 +149,33 @@
 
                 if(initial===1) { setInputValue(inputValueList.filter((item,idx)=>(index!==idx))) }
 
+            }
+
+            var editItem = (event,index)=>{
+                setEditValue([event.target.innerText])
+            }
+
+            var saveEdit = (event,item)=>{
+                event.preventDefault();
+                var value = event.target.parentElement.querySelector(".edit").value
+
+                setInputValue(inputValueList.map((itm)=>(
+                    itm===item? value: itm
+                )))
+
+                setAll(allList.map((itm)=>(
+                    itm===item? value: itm
+                )))
+
+                setActive(activeList.map((itm)=>(
+                    itm===item? value: itm
+                )))
+
+                setCompleted(completedList.map((itm)=>(
+                    itm===item? value: itm
+                )))
+                
+                setEditValue([])
             }
 
             var showAll = (event)=>{
@@ -220,6 +258,7 @@
                                 value={item} 
                                 delete={()=>deleteItem(event,index)}
                                 finish={()=>finshItem(event,index)}
+                                edit={()=>editItem(event,index)}
                             /> ))}
                     </ul>
 
@@ -232,6 +271,14 @@
                         clearComp={clearCompleted} />
 
                     <AddForm submit={()=>addItem(event)} />
+
+                    {editValueList.map((item,index)=>(
+                        <EditItem
+                            key={index}
+                            value={item} 
+                            save={()=>saveEdit(event,item)}
+                        />
+                    ))}
 
                 </div>
             )
