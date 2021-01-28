@@ -142,7 +142,7 @@
                 setCount(itemCount-1)
             }
 
-            var finshItem = (event,index)=>{
+            var finishItem = (event,index)=>{
 
                 setCompleted(completedList.concat(inputValueList.filter((item,idx)=>(index===idx))))
                 setActive(activeList.filter((item,idx)=>(index!==idx)))
@@ -209,7 +209,7 @@
                 document.querySelector(".act").style.border = "1px solid white"
 
                 setInputValue(Array.from(new Set(completedList)))
-                setCount(completedList.length)
+                setCount(Array.from(new Set(completedList)).length)
             }
 
             var clearCompleted =()=>{
@@ -257,7 +257,7 @@
                                 key={index} 
                                 value={item} 
                                 delete={()=>deleteItem(event,index)}
-                                finish={()=>finshItem(event,index)}
+                                finish={()=>finishItem(event,index)}
                                 edit={()=>editItem(event,index)}
                             /> ))}
                     </ul>
