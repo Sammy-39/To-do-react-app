@@ -176,7 +176,7 @@
                 event.preventDefault();
                 var value = event.target.parentElement.querySelector(".edit").value
 
-                if(value!=="" && value!==" " && allList.indexOf(value)===-1){
+                if((value!=="" && value!==" " && allList.indexOf(value)===-1) || allList[index]===value ){
                 setInputValue(inputValueList.map((itm)=>(
                     itm===item? value: itm
                 )))
