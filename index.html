@@ -63,18 +63,26 @@
 
         var ListItem = (props)=>{
             return(
-                <li className="list-group-item item">
-                    <TickIcon finish={props.finish}/>
-                    <div className="value" onClick={props.edit}>{props.value}</div>
-                    <DeleteIcon delete={props.delete}/>
-                </li>
+                <>
+                    { !props.showEdit[props.idx] &&
+                    <li className="list-group-item item">
+                        <TickIcon finish={props.finish}/>
+                        <div className="value" onClick={props.edit}>{props.value}</div>
+                        <DeleteIcon delete={props.delete}/>
+                    </li>
+                    }
+                    {console.log(props.showEdit)}
+                    {
+                        props.showEdit[props.idx] &&
+                        <EditItem key={props.idx} value={props.value} save={props.save} />
+                    }
+                </>
             )
         }
 
         var EditItem = (props)=>{
             return(
-                <form onSubmit={props.save}>
-                    <label> <b> Edit to-do item... </b> </label>
+                <form onSubmit={props.save} className="my-2">
                     <input type="text" className="form-control edit" defaultValue={props.value} />
                 </form>
             )
@@ -117,12 +125,18 @@
 
             var [itemCount, setCount] = React.useState(0)
 
+            var [showEdit, setShowEdit] = React.useState([])
+
+            React.useEffect(()=>{
+                setShowEdit(showEdit.concat([false]));
+            },[inputValueList])
+
             var addItem = (event)=>{
                 event.preventDefault()
                 showCategory = 1
                 var value = document.querySelector('.input').value
                 
-                if(allList.indexOf(value)===-1){
+                if(allList.indexOf(value)===-1 && value!=="" && value!==" "){
                     if([0,1].indexOf(initial)!==-1){ setInputValue(inputValueList.concat([value])) }
                     setAll(allList.concat([value]))
                     setActive(activeList.concat([value]))
@@ -153,12 +167,16 @@
 
             var editItem = (event,index)=>{
                 setEditValue([event.target.innerText])
+                setShowEdit(showEdit.map((item,idx)=>(
+                    idx===index ? true : item
+                )))
             }
 
-            var saveEdit = (event,item)=>{
+            var saveEdit = (event,item,index)=>{
                 event.preventDefault();
                 var value = event.target.parentElement.querySelector(".edit").value
 
+                if(value!=="" && value!==" " && allList.indexOf(value)===-1){
                 setInputValue(inputValueList.map((itm)=>(
                     itm===item? value: itm
                 )))
@@ -176,6 +194,10 @@
                 )))
                 
                 setEditValue([])
+                setShowEdit(showEdit.map((item,idx)=>{
+                    return idx===index ? false : item
+                }))
+                }
             }
 
             var showAll = (event)=>{
@@ -254,12 +276,17 @@
                     <ul className="list-group list mt-5">
                         { inputValueList.map((item,index)=>(
                             <ListItem 
-                                key={index} 
+                                key={index}
+                                idx={index} 
                                 value={item} 
                                 delete={()=>deleteItem(event,index)}
                                 finish={()=>finishItem(event,index)}
                                 edit={()=>editItem(event,index)}
-                            /> ))}
+                                save={()=>saveEdit(event,item,index)}
+                                showEdit = {showEdit}
+                            />       
+                        ))
+                        }
                     </ul>
 
                     <Category 
@@ -271,15 +298,7 @@
                         clearComp={clearCompleted} />
 
                     <AddForm submit={()=>addItem(event)} />
-
-                    {editValueList.map((item,index)=>(
-                        <EditItem
-                            key={index}
-                            value={item} 
-                            save={()=>saveEdit(event,item)}
-                        />
-                    ))}
-
+                   
                 </div>
             )
         }
